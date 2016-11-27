@@ -11,14 +11,13 @@ import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.tool.xml.ElementList;
 import com.itextpdf.tool.xml.XMLWorkerHelper;
+import com.itextpdf.tool.xml.exceptions.RuntimeWorkerException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
+import java.text.MessageFormat;
 import java.util.List;
 
 /**
@@ -31,7 +30,10 @@ public class ConverterService {
     private String fromEmail = StringUtils.EMPTY;
     private String fromName = StringUtils.EMPTY;
     private String subject = StringUtils.EMPTY;
-    private String body = StringUtils.EMPTY;
+    private String bodyHTML = StringUtils.EMPTY;
+    private String bodyText = StringUtils.EMPTY;
+    private String toEmail = StringUtils.EMPTY;
+    private String toName = StringUtils.EMPTY;
     private List<Attachment> atts = null;
     private Document document = new Document();
 
@@ -45,12 +47,16 @@ public class ConverterService {
         }
     }
 
-    private void getData(String fileSrc) throws IOException{
+    private void getData(String fileSrc) throws IOException {
         Message msg = msgp.parseMsg(fileSrc);
         fromEmail = msg.getFromEmail();
+        fromEmail = fromEmail.contains("Content_Types") ? StringUtils.EMPTY : fromEmail;
+        toEmail = msg.getToEmail();
+        toName = msg.getToName();
+        bodyText = msg.getBodyText();
         fromName = msg.getFromName();
         subject = msg.getSubject();
-        body = msg.getConvertedBodyHTML();
+        bodyHTML = msg.getConvertedBodyHTML();
         atts = msg.getAttachments();
     }
 
@@ -59,18 +65,34 @@ public class ConverterService {
         try {
             PdfWriter.getInstance(document, new FileOutputStream(fileSrc));
             document.open();
-            document.add(new Paragraph("From: " + fromEmail + " [" + fromName + "]"));
+            document.add(new Paragraph(String.format("From: %s [%s]", fromEmail, fromName == null ? "N/A" : fromName)));
+            document.add(new Paragraph(MessageFormat.format("To: {0}", toEmail == null ? toName : toEmail)));
             document.add(new Paragraph("Subject: " + subject));
-            document.add(new Paragraph("Body: "));
-            ElementList list = XMLWorkerHelper.parseToElementList(body, null);
-            for (Element element : list) {
-                document.add(element);
+            if (!parseElements(document)) {
+                document.add(new Paragraph("Body text: "));
+                document.add(new Paragraph(bodyText));
             }
         } catch (IOException | DocumentException ex) {
             LOG.error("Error: ", ex);
         } finally {
             document.close();
         }
+    }
+
+    private boolean parseElements(Document document) {
+        boolean ret = true;
+        try {
+            ElementList list = XMLWorkerHelper.parseToElementList(bodyHTML, null);
+            document.add(new Paragraph("Body HTML: "));
+            for (Element element : list) {
+                document.add(element);
+            }
+        } catch (RuntimeWorkerException | DocumentException | IOException e) {
+            LOG.error("Error: ", e);
+            ret = false;
+        }
+
+        return ret;
     }
 
     private void saveAttachments(String fileSrc) throws IOException {
