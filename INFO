@@ -1,0 +1,19 @@
+In this project was used:
+
+http://auxilii.com/msgparser/ [GPL v3] - Parser
+http://poi.apache.org/poifs/ [Apache 2.0] - Which is used by parser
+Some more dependencies from Apache:
+* commons-lang3
+* commons-io
+* log4j
+* poi
+* commons-collections4
+* poi-scratchpad
+
+http://itextpdf.com/ [Affero GPL] - Used to make .PDF
+* itext
+* xmlworker
+
+
+I have done research if there are conflicts with licenses beetween those libaries but I have not found any information.
+If you think this project is breaking license or should be distibuted on another license, please let me know at: bajtas@gmail.com
