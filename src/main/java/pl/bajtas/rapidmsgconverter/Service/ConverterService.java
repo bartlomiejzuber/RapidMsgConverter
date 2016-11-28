@@ -97,10 +97,10 @@ public class ConverterService {
 
     private void saveAttachments(String fileSrc) throws IOException {
         fileSrc = fileSrc.substring(0, fileSrc.lastIndexOf('.')) + "-att";
-        for (Attachment att : atts) {
-            if (att instanceof FileAttachment) {
-                FileAttachment file = (FileAttachment) att;
-                fileSrc += file.getExtension();
+        for (int i = 0; i < atts.size(); i++) {
+            if (atts.get(i) instanceof FileAttachment) {
+                FileAttachment file = (FileAttachment) atts.get(i);
+                fileSrc += i + file.getExtension();
 
                 FileOutputStream out = new FileOutputStream(fileSrc);
                 out.write(file.getData());
