@@ -5,4 +5,4 @@ Simple program made with Java 8 for quick converting .msg files to .pdf files, m
 
 * How to use it
 
-<img src="./demo/usage_example.gif" align="center">
+<a href="#"><img src="./demo/usage_example.gif" align="center"></a>
