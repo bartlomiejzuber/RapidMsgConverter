@@ -1,7 +1,7 @@
 <img src="./images/icon.png" align="right">
 
 # RapidMsgConverter ![GitHub](https://img.shields.io/github/license/bartlomiejzuber/RapidMsgConverter.svg)   [![Github All Releases](https://img.shields.io/github/downloads/Bajtas/RapidMsgConverter/total.svg?style=flat-square)]() 
-Simple program made with Java 8 for quick converting .msg files to .pdf files, made with use of Apache POI libaries and auxilii msgparser.
+Simple program made with Java 8 for quick converting .msg files to .pdf files.
 
 * How to use it
 
